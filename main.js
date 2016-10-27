@@ -1,7 +1,7 @@
 var apiUrl = 'https://hacker-news.firebaseio.com/v0';
 var storyIDs = [];
 var stories = [];
-var authors = [];
+var authorKarma = {};
 var spinner = document.getElementById('spinner');
 var fetching = false;
 
@@ -60,20 +60,58 @@ var requests = {
       return Promise.all(promises).then(requests.authors.success);
     },
     success: function(response) {
-      authors = response;
+      response.map(function(author){
+        authorKarma[author.id] = author.karma;
+      });
     }
   }
 };
 
+function start() {
+  if(fetching) return;
+  fetching = true;
+  spinner.classList.add('loading');
+  spinner.style.fontSize= 0;
+  requests.ids.request()
+  .then(requests.stories.request)
+  .then(requests.authors.request)
+  .then(success)
+  .catch(error);
+}
+
+function success(){
+  spinner.style.display = 'none';
+  fetching = false;
+  var list = document.getElementById('article-list');
+
+  stories.sort(function(a,b){
+    if(a.score > b.score) return 1;
+    if(a.score < b.score) return -1;
+    if(a.score == b.score) return 0;
+  })
+  .map(function(story, i){
+    (function(i){
+      setTimeout(function(){
+        list.appendChild(article(story));
+      },70*i);
+    })(i);
+  });
+}
+
+function error(error) {
+  spinner.style.display = 'none';
+  fetching = false;
+  throw new Error(error);
+}
 
 // Components
-function article(story, user) {
+function article(story) {
   var card = document.createElement('div');
   card.classList.add('article');
   card.appendChild(header(story.title, story.score));
   card.appendChild(link(story.url));
   card.appendChild(timestamp(story.time));
-  card.appendChild(author(user.id, user.karma));
+  card.appendChild(author(story.by));
   return card;
 }
 
@@ -98,46 +136,8 @@ function timestamp(time) {
   return timestamp;
 }
 
-function author(id, karma) {
+function author(id) {
   var author = document.createElement('p');
-  author.appendChild(document.createTextNode('by ' + id + ' - ' + karma));
+  author.appendChild(document.createTextNode('by ' + id + ' +' + authorKarma[id]));
   return author;
-}
-
-function start() {
-  if(fetching) return;
-  fetching = true;
-  spinner.classList.add('loading');
-  spinner.style.fontSize= 0;
-  requests.ids.request()
-  .then(requests.stories.request)
-  .then(requests.authors.request)
-  .then(success)
-  .catch(error);
-}
-
-function success(){
-  spinner.style.display = 'none';
-  fetching = false;
-  var list = document.getElementById('article-list');
-  console.log(stories,authors);
-
-  stories.sort(function(a,b){
-    if(a.score > b.score) return 1;
-    if(a.score < b.score) return -1;
-    if(a.score == b.score) return 0;
-  })
-  .map(function(story, i){
-    (function(i){
-      setTimeout(function(){
-        list.appendChild(article(story,{id:'sphinxo',karma:7881}));
-      },70*i);
-    })(i);
-  });
-}
-
-function error(error) {
-  spinner.style.display = 'none';
-  fetching = false;
-  throw new Error(error);
 }
