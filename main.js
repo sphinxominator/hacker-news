@@ -36,7 +36,7 @@ var requests = {
       );
     },
     success: function(ids) {
-      storyIDs = ids.slice(0,10);
+      storyIDs = getRandom(ids, 10);
     }
   },
   stories: {
@@ -66,6 +66,22 @@ var requests = {
     }
   }
 };
+
+
+// http://stackoverflow.com/questions/19269545/how-to-get-n-no-elements-randomly-from-an-array
+function getRandom(arr, n) {
+    var result = new Array(n),
+        len = arr.length,
+        taken = new Array(len);
+    if (n > len)
+        throw new RangeError("getRandom: more elements taken than available");
+    while (n--) {
+        var x = Math.floor(Math.random() * len);
+        result[n] = arr[x in taken ? taken[x] : x];
+        taken[x] = --len;
+    }
+    return result;
+}
 
 function start() {
   if(fetching) return;
@@ -110,8 +126,7 @@ function article(story) {
   card.classList.add('article');
   card.appendChild(header(story.title, story.score));
   card.appendChild(link(story.url));
-  card.appendChild(timestamp(story.time));
-  card.appendChild(author(story.by));
+  card.appendChild(info(story.by, story.time));
   return card;
 }
 
@@ -129,15 +144,15 @@ function link(url) {
   return link;
 }
 
-function timestamp(time) {
-  var timestamp = document.createElement('p');
-  var string = new Date(time).toString();
-  timestamp.appendChild(document.createTextNode(string));
-  return timestamp;
+function info(id, time) {
+  var author = document.createElement('p');
+  var string = 'Posted ' + timestampString(time) + ' by ' + id + ' (+' + authorKarma[id]+')';
+  author.appendChild(document.createTextNode(string));
+  return author;
 }
 
-function author(id) {
-  var author = document.createElement('p');
-  author.appendChild(document.createTextNode('by ' + id + ' +' + authorKarma[id]));
-  return author;
+function timestampString(time) {
+  var timestamp = document.createElement('p');
+  var d = new Date(time*1000);
+  return d.getDate()+ "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
 }
