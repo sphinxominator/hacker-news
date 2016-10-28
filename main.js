@@ -28,6 +28,8 @@ function makeRequest(path) {
   return promise;
 }
 
+// Let's group and assign every request with response handler,
+// so just chain them in our start() function.
 var requests = {
   ids: {
     request: function() {
@@ -108,6 +110,8 @@ function success(){
     if(a.score == b.score) return 0;
   })
   .map(function(story, i){
+    // Let's add a small delay before every append,
+    // to get a smooth fade in effect
     (function(i){
       setTimeout(function(){
         list.appendChild(article(story));
@@ -148,7 +152,7 @@ function link(url) {
 
 function info(id, time) {
   var author = document.createElement('p');
-  var string = 'Posted ' + timestampString(time) + ' by ' + id + ' (+' + authorKarma[id]+')';
+  var string = 'Posted by ' + id + ' (+' + authorKarma[id]+') at ' + timestampString(time);
   author.appendChild(document.createTextNode(string));
   return author;
 }
@@ -156,5 +160,9 @@ function info(id, time) {
 function timestampString(time) {
   var timestamp = document.createElement('p');
   var d = new Date(time*1000);
-  return d.getDate()+ "-" + (d.getMonth()+1) + "-" + d.getFullYear() + " " + d.getHours() + ":" + d.getMinutes();
+  return ('0'+ d.getDate()).slice(-2) + "-" +
+        ('0'+(d.getMonth()+1)).slice(-2) + "-" +
+        d.getFullYear() + " " +
+        ('0'+d.getHours()).slice(-2) + ":" +
+        ('0'+d.getMinutes()).slice(-2);
 }
