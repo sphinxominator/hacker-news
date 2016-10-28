@@ -28,8 +28,8 @@ function makeRequest(path) {
   return promise;
 }
 
-// Let's group and assign every request with response handler,
-// so just chain them in our start() function.
+// Let's group and assign every request with a response handler,
+// so we can just chain them in our start() function.
 var requests = {
   ids: {
     request: function() {
