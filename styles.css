@@ -3,8 +3,11 @@ html {
 }
 
 body {
-  min-height: 90vh;
+  min-height: 101vh;
+  /* So the scrollbar doesn't make the page jump, when we add the items */
 }
+
+/* Title */
 
 .hacker-news {
   margin: 30px auto;
@@ -21,6 +24,8 @@ body {
   color: grey;
   margin-top: 5px;
 }
+
+/* Spinner */
 
 #spinner {
   width: 200px;
@@ -61,6 +66,7 @@ body {
   }
 }
 
+/* Articles */
 #article-list {
   margin: 0 auto;
   width: 35rem;
@@ -70,8 +76,8 @@ body {
   padding: 1rem;
   position: relative;
 
-  -webkit-animation: fadein 2s; /* Safari, Chrome and Opera > 12.1 */
-            animation: fadein 2s;
+  -webkit-animation: fadein 2s;
+          animation: fadein 2s;
 }
 
 .article h2 {

@@ -60,6 +60,8 @@ var requests = {
       return Promise.all(promises).then(requests.authors.success);
     },
     success: function(response) {
+      // The only information we need is the karma, so let's map
+      // it to it's user id for easy access later.
       response.map(function(author){
         authorKarma[author.id] = author.karma;
       });
